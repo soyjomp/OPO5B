@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ca">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prova de Coneixements - AMB</title>
+
+    <style>
+        :root {
+            --paper-bg: #fdfcfa;
+            --ink-color: #111;
+            --border-color: #333;
+        }
+
+        body {
+            font-family: "Calibri", Arial, sans-serif;
+            background-color: #555;
+            color: var(--ink-color);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Barra superior persistent */
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background-color: var(--paper-bg);
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            border-bottom: 2px solid var(--border-color);
+            padding: 15px 50px;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .stats-container {
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            gap: 15px;
+        }
+
+        .stat-badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            border: 1px solid var(--border-color);
+            background: #fff;
+        }
+
+        .stat-badge.success {
+            color: #2e8b57;
+            border-color: #2e8b57;
+        }
+
+        .stat-badge.danger {
+            color: #d9381e;
+            border-color: #d9381e;
+        }
+
+        /* Contenedor de botones */
+        .header-buttons {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        /* Botón Tornar */
+        .btn-back {
+            background-color: #777;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: "Calibri", Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        .btn-back:hover {
+            background-color: #040000;
+        }
+
+        /* Botón Reiniciar - color diferente */
+        .btn-restart {
+            background-color: #fb9cad;
+            color: #fff;
+            border: none;
+            padding: 8px 15px;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-family: "Calibri", Arial, sans-serif;
+            font-weight: bold;
+        }
+
+        .btn-restart:hover {
+            background-color: #d70000;
+        }
+
+        /* Contenedor principal */
+        .exam-container {
+            background-color: var(--paper-bg);
+            width: 100%;
+            max-width: 900px;
+            padding: 50px 75px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.5);
+            box-sizing: border-box;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .logo-container img {
+            height: 100px;
+            width: auto;
+            display: block;
+        }
+
+        .org-info {
+            font-size: 11px;
+            line-height: 1.3;
+            font-weight: bold;
+            text-align: right;
+        }
+
+        .exam-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+
+        .instructions {
+            font-size: 12px;
+            line-height: 1.4;
+            margin-bottom: 25px;
+            border-bottom: 1px dashed #666;
+            padding-bottom: 15px;
+        }
+
+        .instructions ul {
+            margin: 5px 0 0 20px;
+            padding: 0;
+        }
+
+        .section-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin: 30px 0 15px 0;
+            text-decoration: underline;
+            text-transform: uppercase;
+        }
+
+        .question-block {
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .options-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .option-item {
+            margin-bottom: 1px;
+            padding: 2px 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: flex-start;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .option-item:hover {
+            background-color: rgba(0,0,0,0.03);
+        }
+
+        .option-letter-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            min-width: 28px;
+            height: 28px;
+            font-weight: bold;
+        }
+
+        .option-text {
+            flex: 1;
+            padding-top: 3px;
+        }
+
+        /* Cercle imperfecte SVG */
+        .imperfect-circle {
+            position: absolute;
+            top: -4px;
+            left: -5px;
+            width: 38px;
+            height: 36px;
+            pointer-events: none;
+            display: none;
+            background: transparent !important;
+        }
+
+        .imperfect-circle path {
+            fill: none !important;
+            stroke-width: 2.2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .option-item.selected-wrong .imperfect-circle {
+            display: block;
+        }
+
+        .option-item.selected-wrong .imperfect-circle path {
+            stroke: #d9381e;
+        }
+
+        .option-item.selected-correct .imperfect-circle,
+        .option-item.reveal-correct .imperfect-circle {
+            display: block;
+        }
+
+        .option-item.selected-correct .imperfect-circle path,
+        .option-item.reveal-correct .imperfect-circle path {
+            stroke: #2e8b57;
+        }
+
+        /* Copyright */
+        .copyright {
+            width: 100%;
+            max-width: 900px;
+            box-sizing: border-box;
+            text-align: center;
+            color: #eee;
+            font-size: 12px;
+            padding: 5px 20px 20px 20px;
+        }
+
+        @media (max-width: 768px) {
+
+            body {
+                padding: 0;
+            }
+
+            .sticky-header {
+                padding: 10px 20px;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .stats-container {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .header-buttons {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .exam-container {
+                padding: 25px 20px;
+                margin-top: 10px;
+            }
+
+            .header-top {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .org-info {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- BARRA SUPERIOR -->
+    <div class="sticky-header">
+
+        <div class="stats-container">
+
+            <span class="stat-badge">
+                Total: <span id="count-total">0</span>
+            </span>
+
+            <span class="stat-badge success">
+                Encerts: <span id="count-correct">0</span>
+            </span>
+
+            <span class="stat-badge danger">
+                Fallades: <span id="count-wrong">0</span>
+            </span>
+
+        </div>
+
+        <div class="header-buttons">
+
+            <!-- VOLVER AL ÍNDICE -->
+            <button
+                class="btn-back"
+                onclick="window.location.href='../index.html'">
+                ← Tornar
+            </button>
+
+            <!-- REINICIAR EXAMEN -->
+            <button
+                class="btn-restart"
+                onclick="confirmarReinicio()">
+                ↻ Reiniciar examen
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- EXAMEN -->
+    <div class="exam-container">
+
+        <div class="header-top">
+
+            <div class="logo-container">
+                <img
+                    src="img/logohorizontal.png"
+                    alt="Logo AMB">
+            </div>
+
+            <div class="org-info">
+                Direcció de Serveis Generals<br>
+                Coordinació de Recursos Humans
+            </div>
+
+        </div>
+
+
+        <div class="exam-title">
+
+            C1 BORSA - 2021
+
+            <br><br>
+
+            Borsa de Treball de Personal ADMINISTRATIU de l’Àrea Metropolitana de Barcelona (AMB) i els seus ens dependents <br> (Exp. 903487/21)
+
+            <br><br>
+
+            PREGUNTES 1era PROVA BLOC 1
+
+        </div>
+
+
+        <div class="instructions">
+
+            <strong>Llegiu bé aquestes instruccions abans de començar:</strong>
+
+            <ul>
+
+                <li>
+                    La prova consta de preguntes obligatòries i de reserva.
+                </li>
+
+                <li>
+                    Pots canviar d'opció lliurement.
+                    Si respons, es comprova a l'instant
+                    (verd = encert, vermell = errada).
+                </li>
+
+            </ul>
+
+        </div>
+
+
+        <div id="quiz-container">
+            <!-- S'omplirà dinàmicament des de JS -->
+        </div>
+
+    </div>
+
+
+    <!-- COPYRIGHT -->
+    <div class="copyright">
+        © 2026 OpoAMB | Creat per JOMP
+    </div>
+
+
+    <script src="2021_c1_borsa_test1.js"></script>
+
+    <script>
+        const EXAM_KEY = '2021_c1_borsa_test1';
+
+        let encerts = 0;
+        let fallades = 0;
+        let totalPreguntes = 0;
+
+
+        /* Baralla un array */
+        function barrejarArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+
+        /* Actualitza els comptadors i guarda l'estat per a l'index */
+        function actualitzarComptadors() {
+            document.getElementById('count-total').textContent = totalPreguntes;
+            document.getElementById('count-correct').textContent = encerts;
+            document.getElementById('count-wrong').textContent = fallades;
+
+            // Sincronització amb l'index (localStorage)
+            const respostesFetes = document.querySelectorAll('.question-block.responuda').length;
+            if (totalPreguntes > 0) {
+                let progressPercent = Math.round((respostesFetes / totalPreguntes) * 100);
+                let finalitzat = (respostesFetes === totalPreguntes);
+                if (progressPercent > 99 && !finalitzat) progressPercent = 99;
+
+                let nota = (encerts + fallades) > 0 ? (encerts / (encerts + fallades)) * 10 : 0;
+
+                const examResults = JSON.parse(localStorage.getItem('opoamb_results') || '{}');
+                examResults[EXAM_KEY] = {
+                    progress: progressPercent,
+                    score: Number(nota.toFixed(2)),
+                    passed: finalitzat ? (nota >= 5) : false
+                };
+                localStorage.setItem('opoamb_results', JSON.stringify(examResults));
+            }
+        }
+
+
+        /* Carrega / torna a carregar l'examen */
+        function carregarExamen() {
+            encerts = 0;
+            fallades = 0;
+
+            const container = document.getElementById('quiz-container');
+            container.innerHTML = '';
+
+            let preguntesBarrejades = barrejarArray(preguntesObligatories);
+            let reservesBarrejades = (typeof preguntesReserva !== 'undefined')
+                ? barrejarArray(preguntesReserva)
+                : [];
+
+            totalPreguntes = preguntesBarrejades.length + reservesBarrejades.length;
+
+            actualitzarComptadors();
+
+            let htmlTotal = '';
+
+            preguntesBarrejades.forEach((q, indexReal) => {
+                htmlTotal += generarHTMLPregunta(q, indexReal + 1, 'obl');
+            });
+
+            if (reservesBarrejades.length > 0) {
+                htmlTotal += `
+                    <div class="section-title">
+                        Preguntes de reserva
+                    </div>
+                `;
+
+                reservesBarrejades.forEach((q, indexReal) => {
+                    htmlTotal += generarHTMLPregunta(q, indexReal + 16, 'res');
+                });
+            }
+
+            container.innerHTML = htmlTotal;
+            activarListeners();
+        }
+
+
+        /* Genera una pregunta */
+        function generarHTMLPregunta(q, numeroVisual, tipus) {
+            let opcionsAmbIndex = q.opcions.map((text, idx) => ({
+                text,
+                originalIdx: idx
+            }));
+
+            let opcionsBarrejades = barrejarArray(opcionsAmbIndex);
+            let lletres = ['a', 'b', 'c', 'd'];
+            let htmlOpcions = '';
+
+            opcionsBarrejades.forEach((op, i) => {
+                let lletraAssignada = lletres[i];
+                let esCorrectaAttr = (op.originalIdx === q.correcta) ? 'true' : 'false';
+
+                htmlOpcions += `
+                    <li
+                        class="option-item"
+                        data-correcte="${esCorrectaAttr}"
+                    >
+                        <div class="option-letter-wrapper">
+                            <span class="option-letter">
+                                ${lletraAssignada})
+                            </span>
+                            <svg
+                                class="imperfect-circle"
+                                viewBox="0 0 50 40"
+                                preserveAspectRatio="none"
+                            >
+                                <path d="
+                                    M 6,6
+                                    Q 25,2 44,8
+                                    Q 48,20 42,34
+                                    Q 25,38 5,32
+                                    Q 2,18 6,6 Z
+                                "></path>
+                            </svg>
+                        </div>
+                        <span class="option-text">
+                            ${op.text}
+                        </span>
+                    </li>
+                `;
+            });
+
+            return `
+                <div
+                    class="question-block"
+                    data-tipus="${tipus}"
+                >
+                    <div class="question-text">
+                        ${numeroVisual}. ${q.pregunta}
+                    </div>
+                    <ul class="options-list">
+                        ${htmlOpcions}
+                    </ul>
+                </div>
+            `;
+        }
+
+
+        /* Activa los clics de las respuestas */
+        function activarListeners() {
+            const blocsPreguntes = document.querySelectorAll('.question-block');
+
+            blocsPreguntes.forEach(bloc => {
+                const items = bloc.querySelectorAll('.option-item');
+
+                items.forEach(item => {
+                    item.addEventListener('click', function() {
+                        if (bloc.classList.contains('responuda')) {
+                            if (bloc.classList.contains('et-correcte')) {
+                                encerts--;
+                            } else {
+                                fallades--;
+                            }
+                        }
+
+                        items.forEach(opt => {
+                            opt.classList.remove(
+                                'selected-correct',
+                                'selected-wrong',
+                                'reveal-correct'
+                            );
+                        });
+
+                        bloc.classList.add('responuda');
+
+                        const esCorrecta = this.getAttribute('data-correcte') === 'true';
+
+                        if (esCorrecta) {
+                            this.classList.add('selected-correct');
+                            bloc.classList.add('et-correcte');
+                            encerts++;
+                        } else {
+                            this.classList.add('selected-wrong');
+                            bloc.classList.remove('et-correcte');
+                            fallades++;
+
+                            items.forEach(opt => {
+                                if (opt.getAttribute('data-correcte') === 'true') {
+                                    opt.classList.add('reveal-correct');
+                                }
+                            });
+                        }
+
+                        actualitzarComptadors();
+                    });
+                });
+            });
+        }
+
+
+        /* Pregunta antes de reiniciar. */
+        function confirmarReinicio() {
+            const confirmar = confirm(
+                "¿Estàs segur que vols reiniciar l'examen?\n\n" +
+                "Es perdran les respostes actuals i " +
+                "les preguntes i respostes es tornaran a barrejar."
+            );
+
+            if (confirmar) {
+                // Netejar registre de l'index al fer reset
+                const examResults = JSON.parse(localStorage.getItem('opoamb_results') || '{}');
+                delete examResults[EXAM_KEY];
+                localStorage.setItem('opoamb_results', JSON.stringify(examResults));
+
+                reiniciarExamen();
+            }
+        }
+
+
+        /* Reinicia completamente el examen. */
+        function reiniciarExamen() {
+            carregarExamen();
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+
+        /* Carga inicial */
+        window.onload = carregarExamen;
+    </script>
+
+</body>
+
+</html>

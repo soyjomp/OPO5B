@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mapa Unificat LCSP 9/2017 - C1 AMB</title>
+<style>
+    :root {
+        --fase1-bg: #ebf8ff; --fase1-border: #bee3f8; --fase1-head: #2b6cb0; --fase1-card: #3182ce;
+        --fase2-bg: #f0fff4; --fase2-border: #c6f6d5; --fase2-head: #276749; --fase2-card: #38a169;
+        --fase3-bg: #fffaf0; --fase3-border: #feebc8; --fase3-head: #c05621; --fase3-card: #dd6b20;
+        --fase4-bg: #faf5ff; --fase4-border: #e9d8fd; --fase4-head: #6b46c1; --fase4-card: #805ad5;
+        --dark-text: #2d3748; --muted-text: #4a5568;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: var(--dark-text);
+        background-color: #f7fafc;
+        margin: 0;
+        padding: 15px;
+        line-height: 1.4;
+    }
+
+    .header-container {
+        text-align: center;
+        background: white;
+        padding: 20px 15px;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        margin-bottom: 20px;
+        border-bottom: 4px solid var(--fase1-head);
+    }
+
+    h1 {
+        color: #1a365d;
+        font-size: 1.6rem;
+        margin: 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+        color: var(--muted-text);
+        font-size: 0.95rem;
+        font-weight: 600;
+        margin-top: 6px;
+    }
+
+    /* Board Grid Responsive: 4 col en escriptori */
+    .kanban-board {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+        .kanban-board { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 650px) {
+        .kanban-board { grid-template-columns: 1fr; }
+    }
+
+    .kanban-col {
+        border-radius: 8px;
+        padding: 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    }
+
+    .col-fase1 { background-color: var(--fase1-bg); border: 1px solid var(--fase1-border); }
+    .col-fase2 { background-color: var(--fase2-bg); border: 1px solid var(--fase2-border); }
+    .col-fase3 { background-color: var(--fase3-bg); border: 1px solid var(--fase3-border); }
+    .col-fase4 { background-color: var(--fase4-bg); border: 1px solid var(--fase4-border); }
+
+    .col-title {
+        font-size: 0.95rem;
+        font-weight: bold;
+        text-align: center;
+        padding: 10px;
+        border-radius: 6px;
+        color: white;
+        margin-bottom: 12px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .head-fase1 { background-color: var(--fase1-head); }
+    .head-fase2 { background-color: var(--fase2-head); }
+    .head-fase3 { background-color: var(--fase3-head); }
+    .head-fase4 { background-color: var(--fase4-head); }
+
+    .step-card {
+        background-color: #ffffff;
+        border-radius: 6px;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-left: 4px solid;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+
+    .card-f1 { border-color: var(--fase1-card); }
+    .card-f2 { border-color: var(--fase2-card); }
+    .card-f3 { border-color: var(--fase3-card); }
+    .card-f4 { border-color: var(--fase4-card); }
+
+    .step-header {
+        display: flex;
+        align-items: baseline;
+        gap: 6px;
+    }
+
+    .step-num {
+        font-weight: 800;
+        font-size: 0.9rem;
+    }
+
+    .f1-color { color: var(--fase1-head); }
+    .f2-color { color: var(--fase2-head); }
+    .f3-color { color: var(--fase3-head); }
+    .f4-color { color: var(--fase4-head); }
+
+    .step-title {
+        font-weight: 700;
+        font-size: 0.9rem;
+        color: #1a202c;
+    }
+
+    .step-desc {
+        font-size: 0.82rem;
+        color: var(--muted-text);
+        margin-top: 4px;
+        line-height: 1.35;
+    }
+
+    .sub-item {
+        font-size: 0.8rem;
+        margin-top: 6px;
+        padding-left: 8px;
+        border-left: 2px solid #cbd5e0;
+        color: #2d3748;
+    }
+
+    .badge {
+        display: inline-block;
+        background-color: #edf2f7;
+        color: #2d3748;
+        font-size: 0.72rem;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 4px;
+        margin-top: 4px;
+    }
+
+    .badge-alert { background-color: #fed7d7; color: #9b2c2c; }
+    .badge-info { background-color: #e2e8f0; color: #2b6cb0; }
+    .badge-success { background-color: #c6f6d5; color: #22543d; }
+
+    /* Seccions addicionals i Taula de Resum */
+    .section-box {
+        margin-top: 25px;
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 15px;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .section-title {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #1a365d;
+        margin-bottom: 12px;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 6px;
+    }
+
+    .responsive-table {
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.83rem;
+        margin-top: 8px;
+    }
+
+    th {
+        background-color: #2d3748;
+        color: white;
+        padding: 8px 10px;
+        text-align: left;
+    }
+
+    td {
+        border-bottom: 1px solid #e2e8f0;
+        padding: 7px 10px;
+    }
+
+    tr:nth-child(even) { background-color: #f8fafc; }
+
+    .grid-2col {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+
+    @media (max-width: 768px) {
+        .grid-2col { grid-template-columns: 1fr; }
+    }
+</style>
+</head>
+<body>
+
+<div class="header-container">
+    <h1>MAPA INTEGRAL DE CONTRACTACIÓ PÚBLICA (LCSP 9/2017)</h1>
+    <div class="subtitle">PROCEDIMENT OBERT ORDINARI I TRAMITACIÓ GENERAL – PREPARACIÓ C1 AMB</div>
+</div>
+
+<!-- TABLERO KANBAN DE 4 COLUMNAS -->
+<div class="kanban-board">
+
+    <!-- COLUMNA 1: PREPARACIÓ -->
+    <div class="kanban-col col-fase1">
+        <div class="col-title head-fase1">FASE 1: PREPARACIÓ<br><small>(Tramitació Interna)</small></div>
+        
+        <div class="step-card card-f1">
+            <div class="step-header">
+                <span class="step-num f1-color">1.</span>
+                <span class="step-title">Informe de Necessitat i Eficiència</span>
+            </div>
+            <div class="step-desc">Justificació de la necessitat, objecte del contracte, motivació de no dividir en lots (art. 99) i eficiència.</div>
+            <span class="badge badge-info">Art. 28 LCSP</span>
+        </div>
+
+        <div class="step-card card-f1">
+            <div class="step-header">
+                <span class="step-num f1-color">2.</span>
+                <span class="step-title">Resolució d'Incoació</span>
+            </div>
+            <div class="step-desc">Decret d'inici formal de l'expedient signat per l'Òrgan de Contractació (Presidència AMB o delegat).</div>
+        </div>
+
+        <div class="step-card card-f1">
+            <div class="step-header">
+                <span class="step-num f1-color">3.</span>
+                <span class="step-title">Plec de Prescripcions Tècniques (PPT)</span>
+            </div>
+            <div class="step-desc">Defineix les qualitats, especificacions tècniques, mediambientals i socials de la prestació.</div>
+            <span class="badge">Art. 124 LCSP</span>
+        </div>
+
+        <div class="step-card card-f1">
+            <div class="step-header">
+                <span class="step-num f1-color">4.</span>
+                <span class="step-title">Plec de Clàusules Admin. (PCAP)</span>
+            </div>
+            <div class="step-desc">"Llei del contracte": drets, deures, solvència, criteris de valoració, penalitats i condicions d'execució.</div>
+            <span class="badge">Art. 122 LCSP</span>
+        </div>
+
+        <div class="step-card card-f1">
+            <div class="step-header">
+                <span class="step-num f1-color">5.</span>
+                <span class="step-title">Retenció de Crèdit (Document RC/A)</span>
+            </div>
+            <div class="step-desc">Acreditació de la disponibilitat pressupostària suficient en la partida corresponent.</div>
+            <span class="badge badge-success">Certificat d'existència de crèdit</span>
+        </div>
+
+        <div class="step-card card-f1">
+            <div class="step-header">
+                <span class="step-num f1-color">6.</span>
+                <span class="step-title">Informe d'Intervenció</span>
+            </div>
+            <div class="step-desc">Fiscalització prèvia de la despesa i comprovació del compliment pressupostari i legal.</div>
+        </div>
+
+        <div class="step-card card-f1">
+            <div class="step-header">
+                <span class="step-num f1-color">7.</span>
+                <span class="step-title">Informe de Secretaria / Assessoria</span>
+            </div>
+            <div class="step-desc">Dictamen jurídic de conformitat a dret de l'expedient i dels plecs redactats.</div>
+        </div>
+
+        <div class="step-card card-f1">
+            <div class="step-header">
+                <span class="step-num f1-color">8.</span>
+                <span class="step-title">Aprovació de l'Expedient</span>
+            </div>
+            <div class="step-desc">Resolució que aprova PCAP, PPT, la despesa (Document AD) i disposa l'obertura de la licitació.</div>
+            <span class="badge badge-info">Art. 117 LCSP</span>
+        </div>
+    </div>
+
+    <!-- COLUMNA 2: LICITACIÓ -->
+    <div class="kanban-col col-fase2">
+        <div class="col-title head-fase2">FASE 2: LICITACIÓ<br><small>(Concurrència i Mesa)</small></div>
+        
+        <div class="step-card card-f2">
+            <div class="step-header">
+                <span class="step-num f2-color">9.</span>
+                <span class="step-title">Anunci de Licitació</span>
+            </div>
+            <div class="step-desc">Publicació al Perfil del Contractant (PSCP) i, si és SARA, obligatori al DOUE.</div>
+            <span class="badge badge-alert">Termini: min 35 dies (SARA) / 15-30 dies (No SARA)</span>
+        </div>
+
+        <div class="step-card card-f2">
+            <div class="step-header">
+                <span class="step-num f2-color">10.</span>
+                <span class="step-title">Presentació d'Ofertes</span>
+            </div>
+            <div class="step-desc">Licitació electrònica mitjançant e-Licita / VAG. Les proposicions són secretes fins a l'obertura.</div>
+        </div>
+
+        <div class="step-card card-f2">
+            <div class="step-header">
+                <span class="step-num f2-color">11.</span>
+                <span class="step-title">Convocatòria i Actuació de la Mesa</span>
+            </div>
+            <div class="step-desc">Constitució de la Mesa de Contractació i obertura gradual:</div>
+            <div class="sub-item"><b>11.1. Sobre A (Administratiu):</b> Qualificació de capacitat, solvència i DEUC. <span class="badge badge-alert">Esmena: 3 dies hàbils</span></div>
+            <div class="sub-item"><b>11.2. Sobre B (Judici de valor):</b> Obertura i remissió a serveis tècnics.</div>
+            <div class="sub-item"><b>11.3. Sobre C (Fórmules/Econòmic):</b> Obertura pública del preu.</div>
+        </div>
+
+        <div class="step-card card-f2">
+            <div class="step-header">
+                <span class="step-num f2-color">12.</span>
+                <span class="step-title">Informe Tècnic de Valoració</span>
+            </div>
+            <div class="step-desc">Avaluació dels criteris dependents de judici de valor (Sobre B) realitzat <i>abans</i> d'obrir el Sobre C.</div>
+        </div>
+
+        <div class="step-card card-f2">
+            <div class="step-header">
+                <span class="step-num f2-color">13.</span>
+                <span class="step-title">Avaluació de Baixes Anòmales</span>
+            </div>
+            <div class="step-desc">Identificació d'ofertes amb valors desproporcionats segons criteris del PCAP.</div>
+            <span class="badge badge-alert">Audiència al licitador: 5 dies</span>
+        </div>
+
+        <div class="step-card card-f2">
+            <div class="step-header">
+                <span class="step-num f2-color">14.</span>
+                <span class="step-title">Proposta d'Adjudicació</span>
+            </div>
+            <div class="step-desc">La Mesa classifica les ofertes i eleva la millor opció a l'Òrgan de Contractació.</div>
+        </div>
+    </div>
+
+    <!-- COLUMNA 3: ADJUDICACIÓ -->
+    <div class="kanban-col col-fase3">
+        <div class="col-title head-fase3">FASE 3: ADJUDICACIÓ<br><small>(Resolució i Standstill)</small></div>
+        
+        <div class="step-card card-f3">
+            <div class="step-header">
+                <span class="step-num f3-color">15.</span>
+                <span class="step-title">Requeriment Art. 150.2 LCSP</span>
+            </div>
+            <div class="step-desc">Requeriment al licitador proposat per presentar documentació, estar al corrent de pagaments i dipositar la fiança.</div>
+            <span class="badge badge-alert">Termini preclusiu: 10 dies hàbils</span>
+        </div>
+
+        <div class="step-card card-f3">
+            <div class="step-header">
+                <span class="step-num f3-color">16.</span>
+                <span class="step-title">Constitució Fiança Definitiva</span>
+            </div>
+            <div class="step-desc">Acreditació de la garantia definitiva del 5% de l'import d'adjudicació (exclòs IVA).</div>
+            <span class="badge">5% (fins a 10% complementària)</span>
+        </div>
+
+        <div class="step-card card-f3">
+            <div class="step-header">
+                <span class="step-num f3-color">17.</span>
+                <span class="step-title">Decret d'Adjudicació</span>
+            </div>
+            <div class="step-desc">Resolució motivada d'adjudicació dictada per l'Òrgan de Contractació.</div>
+            <span class="badge badge-info">Màxim 5 dies hàbils des de la doc.</span>
+        </div>
+
+        <div class="step-card card-f3">
+            <div class="step-header">
+                <span class="step-num f3-color">18.</span>
+                <span class="step-title">Notificació i Publicació</span>
+            </div>
+            <div class="step-desc">Notificació als candidats/licitadors i publicació al Perfil del Contractant.</div>
+        </div>
+
+        <div class="step-card card-f3">
+            <div class="step-header">
+                <span class="step-num f3-color">19.</span> <span class="step-title">Període de Standstill</span>
+            </div>
+            <div class="step-desc">Termini de suspensió obligatòria de la signatura per si s'interposa recurs especial (REMC).</div>
+            <span class="badge badge-alert">15 dies hàbils (Si SARA/REMC)</span>
+        </div>
+    </div>
+
+    <!-- COLUMNA 4: EXECUCIÓ -->
+    <div class="kanban-col col-fase4">
+        <div class="col-title head-fase4">FASE 4: EXECUCIÓ<br><small>(Formalització i Garantia)</small></div>
+        
+        <div class="step-card card-f4">
+            <div class="step-header">
+                <span class="step-num f4-color">20.</span>
+                <span class="step-title">Formalització del Contracte</span>
+            </div>
+            <div class="step-desc">Signatura del document administratiu. Transcorregut el standstill, en un màxim de 5 dies hàbils.</div>
+            <span class="badge badge-info">Art. 153 LCSP</span>
+        </div>
+
+        <div class="step-card card-f4">
+            <div class="step-header">
+                <span class="step-num f4-color">21.</span>
+                <span class="step-title">Execució i Seguiment</span>
+            </div>
+            <div class="step-desc">Desenvolupament a risc i ventura del contractista, sota la direcció del Responsable del Contracte.</div>
+        </div>
+
+        <div class="step-card card-f4">
+            <div class="step-header">
+                <span class="step-num f4-color">22.</span>
+                <span class="step-title">Acte de Recepció / Conformitat</span>
+            </div>
+            <div class="step-desc">Comprovació del compliment de la prestació i formalització de l'acta de recepció.</div>
+            <span class="badge badge-alert">Dins dels 30 dies següents</span>
+        </div>
+
+        <div class="step-card card-f4">
+            <div class="step-header">
+                <span class="step-num f4-color">23.</span>
+                <span class="step-title">Liquidació i Devolució Garantia</span>
+            </div>
+            <div class="step-desc">Superat el termini de garantia fixat al contracte, aprovació de la liquidació i devolució del 5%.</div>
+            <span class="badge badge-success">Acabament formal de l'expedient</span>
+        </div>
+    </div>
+
+</div>
+
+<!-- DETALL DE PROCEDIMENTS I CONCEPTES CLAU LCSP -->
+<div class="section-box">
+    <div class="section-title">📌 DADES CLAU I PRÀCTICA PER A L'OPOSICIÓ C1 AMB</div>
+    
+    <div class="grid-2col">
+        <div>
+            <h4>1. Contractes Menors (Art. 118 LCSP)</h4>
+            <p>Són contractes d'adjudicació directa per raó de la quantia. Requereixen informe de necessitat, aprovació de la despesa i factura.</p>
+            <ul>
+                <li><b>Obres:</b> Valor estimat inferior a 40.000 € (menys de 40.000 €)</li>
+                <li><b>Subministraments i Serveis:</b> Valor estimat inferior a 15.000 € (menys de 15.000 €)</li>
+                <li><b>Durada màxima:</b> 1 any (sense possibilitat de pròrroga).</li>
+            </ul>
+
+            <h4>2. Pragàs de Contractes Harmonitzats (SARA)</h4>
+            <p>Són contractes subjectes a regulació harmonitzada (publicitat obligatòria al DOUE i possible REMC):</p>
+            <ul>
+                <li><b>Obres i Concessions:</b> Igual o superior a 5.538.000 €</li>
+                <li><b>Subministraments i Serveis (Admin. Local / AMB):</b> Igual o superior a 221.000 €</li>
+            </ul>
+        </div>
+
+        <div>
+            <h4>3. Procediments Simplificats (Art. 159 LCSP)</h4>
+            <ul>
+                <li><b>Obert Simplificat Ordinari:</b>
+                    <br>- Obres: Fins a un màxim de 2.000.000 € (igual o inferior)
+                    <br>- Serveis i Subministraments: Fins a un màxim de 143.000 € (igual o inferior)
+                    <br>- Inscripció obligatòria al ROLECE.
+                    <br>- Criteris automàtics (fórmules): Com a mínim el 51% de la puntuació.
+                    <br>- Per norma general: Sense garantia provisional ni definitiva.
+                </li>
+                <br>
+                <li><b>Obert Simplificat Abreviat (Súper-simplificat):</b>
+                    <br>- Obres: Fins a un màxim de 80.000 € (igual o inferior)
+                    <br>- Serveis i Subministraments: Fins a un màxim de 60.000 € (igual o inferior)
+                    <br>- Criteris 100% automàtics (només fórmules).
+                    <br>- Sense acreditació de solvència. Termini presentació: Mínim 10 dies hàbils.
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div class="section-box">
+    <div class="section-title">⚖️ RECURSOS, MODIFICACIONS I GARANTIES</div>
+    <div class="responsive-table">
+        <table>
+            <thead>
+                <tr>
+                    <th>Concepte</th>
+                    <th>Regulació LCSP</th>
+                    <th>Punts Clau de Test (C1)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>REMC (Recurs Especial)</b></td>
+                    <td>Art. 44 LCSP</td>
+                    <td>Gratuït, potestatiu abans de la via contenciosa. Obres superiors a 3 M€, Serveis/Subm. superiors a 100.000 €. Termini: 15 dies hàbils. Efecte suspensiu automàtic sobre l'adjudicació.</td>
+                </tr>
+                <tr>
+                    <td><b>Mesa de Contractació</b></td>
+                    <td>Art. 326 LCSP</td>
+                    <td>Òrgan d'assistència tècnica i especialitzat. Composta per President, Vocal Assessor Jurídic, Interventor i Secretari. Cal que almenys un terç dels membres siguin funcionaris de carrera.</td>
+                </tr>
+                <tr>
+                    <td><b>Responsable del Contracte</b></td>
+                    <td>Art. 62 LCSP</td>
+                    <td>Persona física o jurídica (interna o externa) que supervisa l'execució, dicta instruccions i aprova la recepció. Obligatori en tots els contractes.</td>
+                </tr>
+                <tr>
+                    <td><b>Modificació del Contracte</b></td>
+                    <td>Arts. 203-205 LCSP</td>
+                    <td>Previstes al PCAP (fins a un màxim del 20%). Si NO estan previstes, només per circumstàncies imprevistes, força major o prestacions addicionals (límit màxim del 20%).</td>
+                </tr>
+                <tr>
+                    <td><b>Pròrroga</b></td>
+                    <td>Art. 29 LCSP</td>
+                    <td>De conformitat expressa. Durada màxima general de 5 anys incloses les pròrrogues (excepte excepcions justificades).</td>
+                </tr>
+                <tr>
+                    <td><b>Garanties</b></td>
+                    <td>Arts. 106-107 LCSP</td>
+                    <td><b>Definitiva:</b> 5% de l'import d'adjudicació (sense IVA).<br><b>Complementària:</b> Fins a un 5% addicional (total 10%) per a ofertes amb baixa anòmala.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="section-box">
+    <div class="section-title">⚡ RESUM DE TERMINIS PER A L'EXAMEN</div>
+    <div class="grid-2col">
+        <ul>
+            <li><b>Esmena de la documentació del Sobre A:</b> 3 dies hàbils.</li>
+            <li><b>Justificació de la baixa anòmala:</b> 5 dies hàbils.</li>
+            <li><b>Aportació de la doc. de l'Art. 150.2 LCSP:</b> 10 dies hàbils.</li>
+        </ul>
+        <ul>
+            <li><b>Termini de Standstill (REMC):</b> 15 dies hàbils.</li>
+            <li><b>Formalització del contracte:</b> 5 dies hàbils des del final del standstill.</li>
+            <li><b>Recepció de la prestació:</b> 30 dies des del lliurament efectiu.</li>
+        </ul>
+    </div>
+</div>
+
+</body>
+</html>
